@@ -5,16 +5,19 @@ const statusCodes = require('../statusCodes/statusCodes');
 module.exports = {
   createUser: (username, res) => {
     if (!username) {
-      return res.status(statusCodes.BAD_REQUEST).json({ error: errorMessages.USERNAME_REQUIRED });
+        return res.status(statusCodes.BAD_REQUEST).json({ error: errorMessages.USERNAME_REQUIRED });
     }
 
     userModel.createUser(username, (err, lastID) => {
-      if (err) {
-        return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessages.ERROR_CREATING_USER });
-      }
-      res.status(statusCodes.CREATED).json({ username, _id: lastID });
+        if (err) {
+            if (err.message === "Username already exists") {
+                return res.status(statusCodes.BAD_REQUEST).json({ error: "Username must be unique" });
+            }
+            return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessages.ERROR_CREATING_USER });
+        }
+        res.status(statusCodes.CREATED).json({ username, _id: lastID });
     });
-  },
+},
 
   getAllUsers: (res) => {
     userModel.getAllUsers((err, rows) => {

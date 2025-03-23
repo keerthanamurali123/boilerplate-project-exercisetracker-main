@@ -19,7 +19,7 @@
       <form action="/api/users/:_id/exercises" id="exercise-form" method="post">
         <h2>Add exercises</h2>
         <p><code>POST /api/users/:_id/exercises</code></p>
-        <input id="uid" type="text" name=":_id" placeholder=":_id" />
+        <input id="uid" type="text" name="_id" placeholder=":_id" />
         <input id="desc" type="text" name="description" placeholder="description*" />
         <input id="dur" type="text" name="duration" placeholder="duration* (mins.)" />
         <input id="date" type="text" name="date" placeholder="date (yyyy-mm-dd)" />
@@ -36,37 +36,10 @@
       const exerciseForm = document.getElementById("exercise-form");
 
       exerciseForm.addEventListener("submit", () => {
-        const userId = document.getElementById("uid").value;
-        const description = document.getElementById("desc").value;
-        const duration = document.getElementById("dur").value;
-        const date = document.getElementById("date").value;
-
-        if (!userId) {
-          alert("ID is required.");
-          event.preventDefault(); 
-          return;
-        }
-        
-        if (!description) {
-          alert("Description is required.");
-          event.preventDefault(); 
-          return;
-        }
-
-        if (!duration || isNaN(duration) || duration <= 0) {
-          alert("Duration must be a positive number.");
-          event.preventDefault(); 
-          return;
-        }
-
-        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        if (date && !dateRegex.test(date)) {
-          alert("Date must be in the format YYYY-MM-DD.");
-          event.preventDefault(); 
-          return;
-        }
+        const userId = document.getElementById("uid").value.trim();
         exerciseForm.action = `/api/users/${userId}/exercises`;
 
+        exerciseForm.submit();
       });
     </script>
   </body>

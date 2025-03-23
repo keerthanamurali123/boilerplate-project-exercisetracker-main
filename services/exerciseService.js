@@ -5,9 +5,13 @@ const statusCodes = require('../statusCodes/statusCodes');
 const db = require('../database/database');
 
 module.exports = {
-  createExercise: (userId, description, duration, date, res) => {
+    createExercise: (userId, description, duration, date, res) => {
+  
+    if (!userId) {
+        return res.status(statusCodes.BAD_REQUEST).json({ error: "User ID is required" });
+    }
     if (!description || !duration) {
-      return res.status(statusCodes.BAD_REQUEST).json({ error: errorMessages.ERROR_ADDING_EXERCISE });
+      return res.status(statusCodes.BAD_REQUEST).json({ error: errorMessages.MISSING_REQUIRED_FIELD });
     }
 
      // Validate duration 
@@ -21,11 +25,14 @@ module.exports = {
       }
 
       const exerciseDate = date || new Date().toISOString().split("T")[0];
-      const dateRegex = /^\d{4}-\d{2}-\d{2}$/; 
-
-    if (!dateRegex.test(exerciseDate)) {
-        return res.status(400).json({ error: "Date must be in the format YYYY-MM-DD" });
-    }
+      const isValidDate = (dateString) => {
+        const dateObj = new Date(dateString);
+        return !isNaN(dateObj.getTime()) && dateString === dateObj.toISOString().split("T")[0];
+      };
+      
+      if (!isValidDate(exerciseDate)) {
+          return res.status(400).json({ error: "Invalid date. Please use a valid YYYY-MM-DD format." });
+      }
     exerciseModel.createExercise(userId, description, duration, exerciseDate, (err, lastID) => {
         if (err) {
           return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessages.ERROR_ADDING_EXERCISE });

@@ -12,10 +12,23 @@ module.exports = {
     let query = "SELECT * FROM exercises WHERE user_id = ?";
     let params = [userId];
 
-    if (from) query += " AND date >= ?";
-    if (to) query += " AND date <= ?";
-    if (limit) query += " LIMIT ?";
+    if (from) {
+        query += " AND date >= ?";
+        params.push(from);
+    }
+    if (to) {
+        query += " AND date <= ?";
+        params.push(to);
+    }
 
-    db.all(query, [...params, from, to, limit], callback);
-  },
+    query += " ORDER BY date ASC"; 
+
+    if (limit) {
+        query += " LIMIT ?";
+        params.push(limit);
+    }
+
+    db.all(query, params, callback);
+},
+
 };

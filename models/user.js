@@ -2,9 +2,15 @@ const db = require('../database/database');
 
 module.exports = {
   createUser: (username, callback) => {
-    const query = "INSERT INTO users (username) VALUES (?)";
-    db.run(query, [username], function (err) {
-      callback(err, this.lastID);
+    const checkQuery = "SELECT * FROM users WHERE username = ?";
+    db.get(checkQuery, [username], (err, existingUser) => {
+        if (err) return callback(err);
+        if (existingUser) return callback(new Error("Username already exists"));
+
+        const query = "INSERT INTO users (username) VALUES (?)";
+        db.run(query, [username], function (err) {
+            callback(err, this.lastID);
+        });
     });
   },
 
