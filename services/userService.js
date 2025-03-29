@@ -4,11 +4,13 @@ const statusCodes = require('../statusCodes/statusCodes');
 
 module.exports = {
   createUser: (username, res) => {
-    if (!username) {
-        return res.status(statusCodes.BAD_REQUEST).json({ error: errorMessages.USERNAME_REQUIRED });
-    }
+    if (!username || typeof username !== "string" || username.trim() === "") {
+      return res.status(statusCodes.BAD_REQUEST).json({ error: errorMessages.USERNAME_REQUIRED });
+  }
 
-    userModel.createUser(username, (err, lastID) => {
+  const sanitizedUsername = username.trim(); 
+
+    userModel.createUser(sanitizedUsername, (err, lastID) => {
         if (err) {
             if (err.message === "Username already exists") {
                 return res.status(statusCodes.BAD_REQUEST).json({ error: "Username must be unique" });

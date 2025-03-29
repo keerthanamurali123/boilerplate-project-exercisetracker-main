@@ -55,12 +55,11 @@ module.exports = {
         return res.status(statusCodes.NOT_FOUND).json({ error: errorMessages.USER_NOT_FOUND });
       }
   
-      exerciseModel.getExercisesByUser(userId, from, to, limit, (err, rows) => {
+      exerciseModel.getExercisesByUser(userId, from, to, limit, (err, result) => {
         if (err) {
           return res.status(statusCodes.INTERNAL_SERVER_ERROR).json({ error: errorMessages.ERROR_RETRIEVING_LOGS });
         }
-  
-        const count = rows.length;
+        const { totalCount, rows } = result;
         const log = rows.map((row) => ({
           description: row.description,
           duration: row.duration,
@@ -70,7 +69,7 @@ module.exports = {
         res.status(statusCodes.OK).json({
           _id: userId,
           username: user.username, 
-          count,
+          count: totalCount,
           log,
         });
       });
